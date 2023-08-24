@@ -37,7 +37,6 @@ app.get('/api/v1/tours/:id', (req, res) => {
     });
     res.status(200).json({
         status: 'success',
-        result: tours.length,
         data: {
             tour
         }
@@ -60,6 +59,22 @@ app.post('/api/v1/tours', (req, res) => {
         })
     })
 
+});
+
+//i want a patch request to update the tour with the given id
+app.patch('/api/v1/tours/:id', (req, res) => {
+
+    if (+req.params.id > tours.length) return res.status(404).json({
+        status: "fail",
+        message: "Invalid ID"
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            tour: '<Updated tour here...>'
+        }
+    })
 });
 
 const port = 3000;
