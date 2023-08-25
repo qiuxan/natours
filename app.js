@@ -1,14 +1,14 @@
 const morgan = require('morgan');
 const express = require('express');
-const { error } = require('console');
-const { get } = require('http');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
 // 1) MIDDLEWARES
-app.use(morgan('dev'));
+//if it is in development mode, then use morgan
+if (process.env.NODE_ENV === 'development')
+    app.use(morgan('dev'));
 app.use(express.json());
 
 app.use(express.static(`${__dirname}/public`));
