@@ -13,7 +13,8 @@ exports.getAllTours = (req, res) => {
     })
 }
 exports.getTour = (req, res) => {
-    const id = +req.params.id;
+
+    // const id = +req.params.id;
     // const tour = tours.find(t => t.id === id);
     // res.status(200).json({
     //     status: 'success',
@@ -22,22 +23,25 @@ exports.getTour = (req, res) => {
     //     }
     // })
 }
-exports.checkBody = (req, res, next) => {
-    if (!req.body.name || !req.body.price) {
-        return res.status(404).json({
+exports.creatTour = async (req, res) => {
+
+    try {
+        const newTour = await Tour.create(req.body);
+
+        res.status(201).json({
+            status: 'success',
+            data: {
+                tour: newTour
+            }
+        })
+
+    } catch (err) {
+        res.status(400).json({
             status: 'fail',
-            message: 'Missing name or price'
+            message: 'Invalid data sent!' // todo: change this message to be more specific
         })
     }
-    next();
-}
-exports.creatTour = (req, res) => {
-    res.status(201).json({
-        status: 'success',
-        // data: {
-        //     tour: newTour
-        // }
-    })
+
 
 }
 exports.updateTour = (req, res) => {

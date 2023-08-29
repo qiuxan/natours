@@ -1,7 +1,7 @@
 // import tourController from '../controllers/tourController.js';
 
 const express = require('express');
-const { getAllTours, creatTour, getTour, updateTour, deleteTour, checkBody } = require("../controllers/tourController");
+const { getAllTours, creatTour, getTour, updateTour, deleteTour } = require("../controllers/tourController");
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.route('/')
     .get(getAllTours)
-    .post(checkBody, creatTour);
+    .post(creatTour);
 
 router.route('/:id')
     .get(getTour)
