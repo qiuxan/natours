@@ -4,8 +4,24 @@ const Tour = require('../models/tourModel');
 exports.getAllTours = async (req, res) => {
 
     try {
-        const tours = await Tour.find();
 
+        // BUILD QUERY
+        //get a hard copy of query object
+        const queryObj = { ...req.query };
+        const excludedFields = ['page', 'sort', 'limit', 'fields'];
+        excludedFields.forEach(el => delete queryObj[el]);
+        const query = Tour.find(queryObj);
+        // console.log("🚀 ~ file: tourController.js:14 ~ exports.getAllTours= ~ query:", query)
+
+        // EXECUTE QUERY
+        const tours = await query;
+
+        // // use mongoose query methods
+        // const tours = await Tour.find()
+        //     .where('duration').equals(duration)
+        //     .where('difficulty').equals(difficulty);
+
+        // SEND RESPONSE
         res.status(200).json({
             status: 'success',
             result: tours.length,
