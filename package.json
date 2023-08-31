@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "build": "NODE_ENV=production node server.js"
+    "build": "NODE_ENV=production node server.js",
+    "import-dummy-data": "node dev-data/data/import-dev-data.js --import",
+    "delete-dummy-data": "node dev-data/data/import-dev-data.js --delete"
   },
   "author": "",
   "license": "ISC",
