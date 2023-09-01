@@ -15,17 +15,23 @@ exports.getAllTours = async (req, res) => {
 
         //1B) Advanced filtering
         let queryStr = JSON.stringify(queryObj);
-        // console.log("🚀 ~ file: tourController.js:14 ~ exports.getAllTours= ~ queryStr:", queryStr)
         //replacet the lt, lte, gt, gte with $lt, $lte, $gt, $gte
         queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-        // console.log("🚀 ~ file: tourController.js:14 ~ exports.getAllTours= ~ queryStr:", queryStr)
 
         //make queryStr to be a object
         queryStr = JSON.parse(queryStr);
 
-        const query = Tour.find(queryStr);
-        // console.log("🚀 ~ file: tourController.js:14 ~ exports.getAllTours= ~ query:", query)
+        let query = Tour.find(queryStr);
 
+        //2) Sorting
+
+        if (req.query.sort) {
+            const sortBy = req.query.sort.split(',').join(' ');
+            query = query.sort(sortBy);
+        } else {
+            //default sorting
+            query = query.sort('-createdAt');
+        }
         // EXECUTE QUERY
         const tours = await query;
 
