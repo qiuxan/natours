@@ -8,7 +8,7 @@ exports.getAllTours = async (req, res) => {
         // BUILD QUERY
         //get a hard copy of query object
         //1A) Filtering
-        let queryObj = { ...req.query };
+        const queryObj = { ...req.query };
         console.log("🚀 ~ file: tourController.js:11 ~ exports.getAllTours= ~ req.query:", req.query)
         const excludedFields = ['page', 'sort', 'limit', 'fields'];
         excludedFields.forEach(el => delete queryObj[el]);
@@ -31,6 +31,15 @@ exports.getAllTours = async (req, res) => {
         } else {
             //default sorting
             query = query.sort('-createdAt');
+        }
+
+        //3) Field limiting
+        if (req.query.fields) {
+            const fields = req.query.fields.split(',').join(' ');
+            query = query.select(fields);
+        } else {
+            //default limiting
+            query = query.select('-__v');
         }
         // EXECUTE QUERY
         const tours = await query;
