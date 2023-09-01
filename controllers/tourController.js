@@ -7,10 +7,23 @@ exports.getAllTours = async (req, res) => {
 
         // BUILD QUERY
         //get a hard copy of query object
-        const queryObj = { ...req.query };
+        //1A) Filtering
+        let queryObj = { ...req.query };
+        console.log("🚀 ~ file: tourController.js:11 ~ exports.getAllTours= ~ req.query:", req.query)
         const excludedFields = ['page', 'sort', 'limit', 'fields'];
         excludedFields.forEach(el => delete queryObj[el]);
-        const query = Tour.find(queryObj);
+
+        //1B) Advanced filtering
+        let queryStr = JSON.stringify(queryObj);
+        // console.log("🚀 ~ file: tourController.js:14 ~ exports.getAllTours= ~ queryStr:", queryStr)
+        //replacet the lt, lte, gt, gte with $lt, $lte, $gt, $gte
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+        // console.log("🚀 ~ file: tourController.js:14 ~ exports.getAllTours= ~ queryStr:", queryStr)
+
+        //make queryStr to be a object
+        queryStr = JSON.parse(queryStr);
+
+        const query = Tour.find(queryStr);
         // console.log("🚀 ~ file: tourController.js:14 ~ exports.getAllTours= ~ query:", query)
 
         // EXECUTE QUERY
