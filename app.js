@@ -25,6 +25,14 @@ app.use((req, res, next) => {
 // 3) ROUTES
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
+// create a route for note defined routes
+app.all('*', (req, res, next) => {
+    res.status(404).json({
+        status: 'fail',
+        message: `Can't find ${req.originalUrl} on this server`
+    })
+
+})
 
 // 4) START SERVER
 module.exports = app;
