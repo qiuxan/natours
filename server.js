@@ -1,3 +1,9 @@
+process.on('uncaughtException', (err) => {
+    console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+    console.log(err.name, err.message)
+    process.exit(1);
+});
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -34,5 +40,4 @@ process.on('unhandledRejection', (err) => {
     server.close(() => {
         process.exit(1);
     });
-
 });
