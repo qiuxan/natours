@@ -7,6 +7,7 @@ const User = require("../models/userModel");
 // import catchAsync
 const catchAsync = require("../utils/catchAsync");
 const AppError = require('../utils/appError');
+const exp = require('constants');
 
 //sign Token
 const signToken = id => jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -18,14 +19,16 @@ exports.signup = catchAsync(async (req, res, next) => {
     // create a new user
     // const newUser = await User.create(req.body);
     // create a new user with only name, email, password and passwordConfirm
-    const newUser = await User.create({
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm,
-        passwordChangedAt: req.body.passwordChangedAt,
-    });
+    // const newUser = await User.create({
+    //     name: req.body.name,
+    //     email: req.body.email,
+    //     password: req.body.password,
+    //     passwordConfirm: req.body.passwordConfirm,
+    //     // passwordChangedAt: req.body.passwordChangedAt,
+    //     // role: req.body.role,
+    // });
 
+    const newUser = await User.create(req.body);
     // create a token
     const token = signToken(newUser._id);
 
@@ -95,3 +98,13 @@ exports.protect = catchAsync(async (req, res, next) => {
     // GRANT ACCESS TO PROTECTED ROUTE
     next();
 })
+
+exports.restricTo = (...roles) => (req, res, next) => {
+    // roles ['admin', 'lead-guide']
+    // console.log("🚀 ~ file: authController.js:99 ~ return ~ roles", roles)
+    // console.log("🚀 ~ file: authController.js:99 ~ return ~ req.user.role", req.user.role)
+    if (!roles.includes(req.user.role)) {
+        return next(new AppError('You do not have permission to perform this action', 403));
+    }
+    next();
+}
