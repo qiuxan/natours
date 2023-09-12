@@ -1,3 +1,5 @@
+//import crypto package
+const crypto = require('crypto');
 //require mongoose package
 const mongoose = require('mongoose');
 //require validator package
@@ -47,6 +49,8 @@ const userSchema = new mongoose.Schema({
         },
     },
     passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -73,6 +77,21 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     }
     // if user did not change password after token was issued, then return false
     return false;
+}
+
+// create a method to create a password reset token
+
+userSchema.methods.createPasswordResetToken = function () {
+    // create a password reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    // hash the password reset token
+    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    console.log("🚀 ~ file: userModel.js:89 ~ this.passwordResetToken:", this.passwordResetToken)
+    console.log("🚀 ~ file: userModel.js:89 ~ resetToken:", resetToken)
+    // set the password reset token expiration time to 10 minutes
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+    // return the password reset token
+    return resetToken;
 }
 
 // create a model of userSchema
