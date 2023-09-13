@@ -1,3 +1,5 @@
+//require crypto package
+const crypto = require('crypto');
 //require util package
 const { promisify } = require('util');
 //require jwt package
@@ -9,6 +11,7 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require('../utils/appError');
 // import sendEmail
 const sendEmail = require('../utils/email');
+
 
 //sign Token
 const signToken = id => jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -141,9 +144,48 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;
         await user.save({ validateBeforeSave: false });
-        return next(new AppError('There was an error sending the email. Try again later!', 500));  
+        return next(new AppError('There was an error sending the email. Try again later!', 500));
     }
 
 });
-exports.resetPassword = catchAsync(async (req, res, next) => { });
+exports.resetPassword = catchAsync(async (req, res, next) => {
+    //1> Get user based on the token
+    const hashedToken
+        = crypto
+            .createHash('sha256')
+            .update(req.params.token)
+            .digest('hex');
+
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() },
+    });
+    //2> If token has not expired, and there is user, set the new password
+
+    if (!user) {
+        return next(new AppError('Token is invalid or has expired', 400));
+    }
+
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    // delete passwordResetToken and passwordResetExpires
+
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    //3> Update changedPasswordAt property for the use
+    //do it in userModel.js pre save middleware
+    // save the user
+    await user.save();
+
+    //4> Log the user in, send JWT
+
+    const token = signToken(user._id);
+    res.status(200).json({
+        status: 'success',
+        token,
+    })
+
+
+});
 
