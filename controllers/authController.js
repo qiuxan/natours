@@ -18,32 +18,26 @@ const signToken = id => jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
 })
 
-
-exports.signup = catchAsync(async (req, res, next) => {
-    // create a new user
-    // const newUser = await User.create(req.body);
-    // create a new user with only name, email, password and passwordConfirm
-    // const newUser = await User.create({
-    //     name: req.body.name,
-    //     email: req.body.email,
-    //     password: req.body.password,
-    //     passwordConfirm: req.body.passwordConfirm,
-    //     // passwordChangedAt: req.body.passwordChangedAt,
-    //     // role: req.body.role,
-    // });
-
-    const newUser = await User.create(req.body);
+const createSendToken = (user, statusCode, res) => {
     // create a token
-    const token = signToken(newUser._id);
+    const token = signToken(user._id);
 
     // send the response
-    res.status(201).json({
+    res.status(statusCode).json({
         status: 'success',
         token,
         data: {
-            user: newUser,
+            user
         },
     });
+}
+
+exports.signup = catchAsync(async (req, res, next) => {
+
+
+    const newUser = await User.create(req.body);
+    // create a token
+    createSendToken(newUser, 201, res);
 })
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -62,11 +56,8 @@ exports.login = catchAsync(async (req, res, next) => {
     }
 
     //3> if everything ok, send token to client
-    const token = signToken(user._id);
-    res.status(200).json({
-        status: 'success',
-        token,
-    })
+    createSendToken(user, 200, res);
+
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -180,12 +171,29 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
     //4> Log the user in, send JWT
 
-    const token = signToken(user._id);
-    res.status(200).json({
-        status: 'success',
-        token,
-    })
+    createSendToken(user, 200, res);
 
+});
 
+// action update password
+exports.updatePassword = catchAsync(async (req, res, next) => {
+    // console.log("🚀 ~ file: authController.js:192 ~ exports.updatePassword=catchAsync ~ req:", req.body.passwordCurrent)
+    //1> Get user from collection
+    const user = await User.findById(req.user.id).select('+password');
+    // console.log("🚀 ~ file: authController.js:194 ~ exports.updatePassword=catchAsync ~ user:", user)
+    //2> Check if POSTed current password is correct
+
+    //campare the entered password req.body.password with the user password in the database
+    if (!await user.correctPassword(req.body.passwordCurrent, user.password)) {
+        return next(new AppError('Your current password is wrong', 401));
+    }
+    //3> If so, update password
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    // do not use User.findByIdAndUpdate() because it will not work as intended
+    user.passwordChangedAt = Date.now() - 1000;
+    await user.save();
+    //4> Log user in, send JWT
+    createSendToken(user, 200, res);
 });
 
