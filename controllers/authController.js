@@ -18,47 +18,6 @@ const signToken = id => jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
 })
 
-const createSendToken = (user, statusCode, res) => {
-    // create a token
-    const token = signToken(user._id);
-
-    // send the response
-    res.status(statusCode).json({
-        status: 'success',
-        token,
-        data: {
-            user
-        },
-    });
-}
-
-exports.signup = catchAsync(async (req, res, next) => {
-
-
-    const newUser = await User.create(req.body);
-    // create a token
-    createSendToken(newUser, 201, res);
-})
-
-exports.login = catchAsync(async (req, res, next) => {
-    const { email, password } = req.body;
-    //1> check if email and password exist
-    if (!email || !password) {
-        return next(new AppError('Please provide email and password', 400));
-    }
-    //2> check if user exists && password is correct
-    const user = await User.findOne({ email }).select('+password');
-    // console.log("🚀 ~ file: authController.js:44 ~ exports.login=catchAsync ~ user:", user)
-
-    //if there is no user or password is incorrect, return error
-    if (!user || !await user.correctPassword(password, user.password)) {
-        return next(new AppError('Incorrect email or password', 401));
-    }
-
-    //3> if everything ok, send token to client
-    createSendToken(user, 200, res);
-
-})
 
 exports.protect = catchAsync(async (req, res, next) => {
 
@@ -93,6 +52,58 @@ exports.protect = catchAsync(async (req, res, next) => {
     // GRANT ACCESS TO PROTECTED ROUTE
     next();
 })
+
+const createSendToken = (user, statusCode, res) => {
+    // create a token
+    const token = signToken(user._id);
+
+    //send token via cookie
+    const cookieOptions = { // cookie options
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000), // convert to miliseconds  
+        httpOnly: true, // cookie cannot be accessed or modified in any way by the browser
+    };
+    if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; // cookie will only be sent on an encrypted connection using https
+
+    res.cookie('jwt', token, cookieOptions);
+
+    user.password = undefined; // remove password from the output
+
+    // send the response
+    res.status(statusCode).json({
+        status: 'success',
+        token,
+        data: {
+            user
+        },
+    });
+}
+
+exports.signup = catchAsync(async (req, res, next) => {
+    const newUser = await User.create(req.body);
+    // create a token
+    createSendToken(newUser, 201, res);
+})
+
+exports.login = catchAsync(async (req, res, next) => {
+    const { email, password } = req.body;
+    //1> check if email and password exist
+    if (!email || !password) {
+        return next(new AppError('Please provide email and password', 400));
+    }
+    //2> check if user exists && password is correct
+    const user = await User.findOne({ email }).select('+password');
+    // console.log("🚀 ~ file: authController.js:44 ~ exports.login=catchAsync ~ user:", user)
+
+    //if there is no user or password is incorrect, return error
+    if (!user || !await user.correctPassword(password, user.password)) {
+        return next(new AppError('Incorrect email or password', 401));
+    }
+
+    //3> if everything ok, send token to client
+    createSendToken(user, 200, res);
+
+})
+
 
 exports.restricTo = (...roles) => (req, res, next) => {
     // roles ['admin', 'lead-guide']
