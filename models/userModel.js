@@ -63,6 +63,18 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
+// create a method to save passwordChangedAt property
+userSchema.pre('save', function (next) {
+    // if password is not modified or if document is new, then return next
+    if (!this.isModified('password') || this.isNew) return next();
+    // if password is modified, then save passwordChangedAt property
+    // subtract 1 second to make sure token is created after passwordChangedAt property is saved so that user can login --  
+    // this is because it takes a few seconds to save the token and the token is created before passwordChangedAt property is saved so that user cannot login(see authController.js login function)
+    this.passwordChangedAt = Date.now() - 1000; 
+    next();
+});
+
+
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compareSync(candidatePassword, userPassword);
 };
@@ -86,8 +98,8 @@ userSchema.methods.createPasswordResetToken = function () {
     const resetToken = crypto.randomBytes(32).toString('hex');
     // hash the password reset token
     this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-    console.log("🚀 ~ file: userModel.js:89 ~ this.passwordResetToken:", this.passwordResetToken)
-    console.log("🚀 ~ file: userModel.js:89 ~ resetToken:", resetToken)
+    // console.log("🚀 ~ file: userModel.js:89 ~ this.passwordResetToken:", this.passwordResetToken)
+    // console.log("🚀 ~ file: userModel.js:89 ~ resetToken:", resetToken)
     // set the password reset token expiration time to 10 minutes
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
     // return the password reset token
