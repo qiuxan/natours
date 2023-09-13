@@ -22,6 +22,16 @@ exports.createUser = (req, res) => {
     })
 }
 
+exports.deleteMe = catchAsync(async (req, res, next) => {
+    // set active to false
+    await User.findByIdAndUpdate(req.user.id, { active: false });
+    res.status(204).json({
+        status: "success",
+        data: null,
+    })
+}) 
+
+
 exports.updateMe = catchAsync(async (req, res, next) => {
     // if req.body contains password or passwordConfirm, then return error
     if (req.body.password || req.body.passwordConfirm) {

@@ -51,6 +51,19 @@ const userSchema = new mongoose.Schema({
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    active: {
+        // if active is false, then user is deleted
+        type: Boolean,
+        default: true,
+        select: false,
+    },
+});
+
+// create a middleware to not show inactive users
+userSchema.pre(/^find/, function (next) {
+    // this points to the current query
+    this.find({ active: { $ne: false } });
+    next();
 });
 
 userSchema.pre('save', async function (next) {
@@ -70,7 +83,7 @@ userSchema.pre('save', function (next) {
     // if password is modified, then save passwordChangedAt property
     // subtract 1 second to make sure token is created after passwordChangedAt property is saved so that user can login --  
     // this is because it takes a few seconds to save the token and the token is created before passwordChangedAt property is saved so that user cannot login(see authController.js login function)
-    this.passwordChangedAt = Date.now() - 1000; 
+    this.passwordChangedAt = Date.now() - 1000;
     next();
 });
 
