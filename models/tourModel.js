@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const User = require('./userModel');
 // const validator = require('validator');
 
 const tourSchema = mongoose.Schema({
@@ -105,12 +106,7 @@ const tourSchema = mongoose.Schema({
             day: Number,
         }
     ],
-    guides: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: 'User',
-        }
-    ],
+    guides: Array,
 
 
 }, {
@@ -125,6 +121,13 @@ tourSchema.virtual('durationWeeks').get(function () {
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function (next) {
     this.slug = slugify(this.name, { lower: true });
+    next();
+});
+
+// tour guides embedding
+tourSchema.pre('save', async function (next) {
+    const guidesPromise = this.guides.map(async id => await User.findById(id));
+    this.guides = await Promise.all(guidesPromise);
     next();
 });
 
