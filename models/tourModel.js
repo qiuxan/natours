@@ -81,9 +81,41 @@ const tourSchema = mongoose.Schema({
         select: false,
     },
     startDates: [Date],
+    startLocation: {
+        // GeoJSON
+        type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point'], // only accept Point
+        },
+        coordinates: [Number], // array of numbers
+        address: String,
+        description: String,
+    },
+    locations: [
+        {
+            type: {
+                type: String,
+                default: 'Point',
+                enum: ['Point'], // only accept Point
+            },
+            coordinates: [Number], // array of numbers
+            address: String,
+            description: String,
+            day: Number,
+        }
+    ],
+    guides: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+        }
+    ],
+
+
 }, {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: { virtuals: true },// when data is outputted as JSON, virtuals will be included
+    toObject: { virtuals: true },// when data is outputted as Object, virtuals will be included
 });
 
 tourSchema.virtual('durationWeeks').get(function () {
