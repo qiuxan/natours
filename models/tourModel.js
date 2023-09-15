@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const User = require('./userModel');
+// const User = require('./userModel');
 // const validator = require('validator');
 
 const tourSchema = mongoose.Schema({
@@ -106,7 +106,12 @@ const tourSchema = mongoose.Schema({
             day: Number,
         }
     ],
-    guides: Array,
+    guides: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+        }
+    ],
 
 
 }, {
@@ -125,11 +130,11 @@ tourSchema.pre('save', function (next) {
 });
 
 // tour guides embedding
-tourSchema.pre('save', async function (next) {
-    const guidesPromise = this.guides.map(async id => await User.findById(id));
-    this.guides = await Promise.all(guidesPromise);
-    next();
-});
+// tourSchema.pre('save', async function (next) {
+//     const guidesPromise = this.guides.map(async id => await User.findById(id));
+//     this.guides = await Promise.all(guidesPromise);
+//     next();
+// });
 
 // tourSchema.post('save', function (doc, next) {
 //     console.log(doc);
