@@ -5,7 +5,7 @@ const reviewController = require('../controllers/reviewController');
 //import authController
 const { protect, restricTo } = require('../controllers/authController');
 //create router
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 
 router.route('/')
