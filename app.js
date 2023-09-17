@@ -8,6 +8,9 @@ const hpp = require('hpp');//Prevent parameter pollution
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+//import reviewRouter
+const reviewRouter = require('./routes/reviewRoutes');
+
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -69,6 +72,9 @@ app.use((req, res, next) => {
 // 3) ROUTES
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
+//use reviewRouter
+app.use('/api/v1/reviews', reviewRouter);
+
 // create a route for note defined routes
 app.all('*', (req, res, next) => {
     // const err = new Error(`Can't find ${req.originalUrl} on this server`);
