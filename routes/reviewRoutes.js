@@ -14,5 +14,9 @@ router.route('/')
 
 router.route('/:id')
     .get(reviewController.getReview);
+
+//set up delete route
+router.route('/:id')
+    .delete(protect, restricTo('user', 'admin'), reviewController.deleteReview);
 //export router
 module.exports = router;
