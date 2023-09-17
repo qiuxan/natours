@@ -5,6 +5,9 @@ const catchAsync = require("../utils/catchAsync");
 //require appError
 const AppError = require('../utils/appError');
 
+// import handlerFactory
+const factory = require("./handlerFactory");
+
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
     Object.keys(obj).forEach(el => {
@@ -29,7 +32,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
         status: "success",
         data: null,
     })
-}) 
+})
 
 
 exports.updateMe = catchAsync(async (req, res, next) => {
@@ -81,9 +84,4 @@ exports.updateUser = (req, res) => {
         message: "This route is not yet defined"
     })
 }
-exports.deleteUser = (req, res) => {
-    res.status(500).json({
-        status: "error",
-        message: "This route is not yet defined"
-    })
-}
+exports.deleteUser = factory.deleteOne(User);
