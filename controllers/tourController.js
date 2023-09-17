@@ -6,11 +6,7 @@ const AppError = require('../utils/appError');
 
 
 exports.getAllTours = catchAsync(async (req, res, next) => {
-
-
     const features = new APIFeature(Tour.find(), req.query).filter().sort().paginate();
-
-
     const tours = await features.query;
     // SEND RESPONSE
     res.status(200).json({
