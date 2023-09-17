@@ -4,11 +4,27 @@ const express = require('express');
 const { getAllTours, creatTour, getTour, updateTour, deleteTour, aliasTopTours, getTourStats, getMonthlyPlan } = require("../controllers/tourController");
 
 //require reviewController
-const reviewController = require('../controllers/reviewController');
+// const reviewController = require('../controllers/reviewController');
+
+//require review router
+const reviewRouter = require('./reviewRoutes');
 //import authController
 const authController = require('../controllers/authController');
 
 const router = express.Router();
+
+
+//POST /tour/234fad4/reviews  
+// router.route('/:tourId/reviews')
+//     .post(
+//         authController.protect,
+//         authController.restricTo('user'),
+//         reviewController.createReview
+//     );
+//GET /tour/234fad4/reviews
+//GET /tour/234fad4/reviews/9483fdd
+
+router.use('/:tourId/reviews', reviewRouter);
 
 // router.param('id', checkId);
 
@@ -30,14 +46,6 @@ router.route('/:id')
         authController.restricTo('admin', 'lead-guide'),
         deleteTour);
 
-//POST /tour/234fad4/reviews  
-router.route('/:tourId/reviews')
-    .post(
-        authController.protect,
-        authController.restricTo('user'),
-        reviewController.createReview
-    );
-//GET /tour/234fad4/reviews
-//GET /tour/234fad4/reviews/9483fdd
+
 
 module.exports = router;
