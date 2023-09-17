@@ -3,6 +3,8 @@
 const express = require('express');
 const { getAllTours, creatTour, getTour, updateTour, deleteTour, aliasTopTours, getTourStats, getMonthlyPlan } = require("../controllers/tourController");
 
+//require reviewController
+const reviewController = require('../controllers/reviewController');
 //import authController
 const authController = require('../controllers/authController');
 
@@ -27,5 +29,15 @@ router.route('/:id')
     .delete(authController.protect,
         authController.restricTo('admin', 'lead-guide'),
         deleteTour);
+
+//POST /tour/234fad4/reviews  
+router.route('/:tourId/reviews')
+    .post(
+        authController.protect,
+        authController.restricTo('user'),
+        reviewController.createReview
+    );
+//GET /tour/234fad4/reviews
+//GET /tour/234fad4/reviews/9483fdd
 
 module.exports = router;

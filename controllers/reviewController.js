@@ -18,7 +18,8 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
 });
 
 exports.createReview = catchAsync(async (req, res, next) => {
-
+    //allow nested routes
+    if (!req.body.tour) req.body.tour = req.params.tourId;
     //create a review document with the data from the request body
 
     const newReview = await Review.create({
