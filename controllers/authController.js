@@ -105,7 +105,7 @@ exports.login = catchAsync(async (req, res, next) => {
 })
 
 
-exports.restricTo = (...roles) => (req, res, next) => {
+exports.restrictTo = (...roles) => (req, res, next) => {
     // roles ['admin', 'lead-guide']
     // console.log("🚀 ~ file: authController.js:99 ~ return ~ roles", roles)
     // console.log("🚀 ~ file: authController.js:99 ~ return ~ req.user.role", req.user)
