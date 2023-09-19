@@ -119,6 +119,12 @@ const tourSchema = mongoose.Schema({
     toObject: { virtuals: true },// when data is outputted as Object, virtuals will be included
 });
 
+
+// tourSchema.index({ price: 1 }); // compound index eg. {{url}}/api/v1/tours?price[lt]=1000
+
+tourSchema.index({ price: 1, ratingsAverage: -1 }); // compound index eg. {{url}}/api/v1/tours?price[lt]=1000&ratingsAverage[gte]=4.5
+tourSchema.index({ slug: 1 }); // single index . 1 or -1 means ascending or descending order, actually it doesn't matter for single index
+
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
 })

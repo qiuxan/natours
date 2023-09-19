@@ -77,7 +77,7 @@ exports.getAll = Model => catchAsync(async (req, res, next) => {
         .limitFields()
         .paginate();
     const doc = await features.query;
-    // const doc = await features.query.explain();
+    // const doc = await features.query.explain(); //explain() shows the statistics of the query, like how many documents were scanned to get the current result, etc.
     //send response
     res.status(200).json({
         status: 'success',
