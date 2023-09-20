@@ -177,11 +177,11 @@ tourSchema.post(/^find/, function (docs, next) {
 })
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // add this match rule to the beginning of the pipeline so it will be a part of alll aggregation
-    console.log(this.pipeline());
-    next();
-})
+// tourSchema.pre('aggregate', function (next) {
+//     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // add this match rule to the beginning of the pipeline so it will be a part of alll aggregation
+//     console.log(this.pipeline());
+//     next();
+// })
 
 const Tour = mongoose.model('Tour', tourSchema);
 

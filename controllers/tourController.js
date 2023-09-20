@@ -6,6 +6,51 @@ const AppError = require('../utils/appError');
 //require handlerFactory.js
 const factory = require('./handlerFactory');
 
+exports.getDistances = catchAsync(async (req, res, next) => {
+    //destructure the url to get the distance, latlng and unit from the url
+    const { latlng, unit } = req.params;
+    //destruct the latlng to get the latitude and longitude
+    const [lat, lng] = latlng.split(',');
+    //convert the distance to miles or km
+    const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+    //if user didn't provide the latitude or longitude, throw an error
+    if (!lat || !lng) {
+        return next(new AppError('Please provide latitude and longitude in the format lat,lng.', 400));
+    }
+
+    //calculate the distance
+    const distances = await Tour.aggregate([
+        {
+            $geoNear: {
+                //where the geoNear should calculate the distance from
+                near: {
+                    type: 'Point',
+                    coordinates: [lng * 1, lat * 1]
+                },
+                //the name of the field where the calculated distance will be stored
+                distanceField: 'distance',
+                //the unit of the distance
+                distanceMultiplier: multiplier
+            }
+        },
+        {
+            $project: {
+                distance: 1,
+                name: 1
+            }
+        }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: distances
+        }
+    });
+
+});
+
 exports.getAllTours = factory.getAll(Tour);
 // exports.getTour = catchAsync(async (req, res, next) => {
 //     const tour = await Tour.findById(req.params.id).populate('reviews');
@@ -160,3 +205,4 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
         }
     });
 });
+
