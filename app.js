@@ -1,3 +1,4 @@
+const path = require('path');
 const morgan = require('morgan');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
@@ -15,6 +16,16 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
+
+//set template engine pug
+app.set('view engine', 'pug');
+//set views 
+app.set('views', path.join(__dirname, 'views'));
+
+
+//serving static files
+// app.use(express.static(`${__dirname}/public`));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // 1)GLOBAL MIDDLEWARES
 
@@ -56,9 +67,6 @@ app.use(hpp(
     }
 ));
 
-//serving static files
-app.use(express.static(`${__dirname}/public`));
-
 
 //request time middleware 
 //test middleware
@@ -70,6 +78,10 @@ app.use((req, res, next) => {
 })
 
 // 3) ROUTES
+app.get('/', (req, res) => {
+    res.status(200).render('base');
+});
+
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
 //use reviewRouter
