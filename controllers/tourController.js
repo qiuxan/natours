@@ -1,12 +1,10 @@
 const Tour = require('../models/tourModel');
 // const APIFeature = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-// const AppError = require('../utils/appError');
+const AppError = require('../utils/appError');
 
 //require handlerFactory.js
 const factory = require('./handlerFactory');
-
-
 
 exports.getAllTours = factory.getAll(Tour);
 // exports.getTour = catchAsync(async (req, res, next) => {
@@ -123,3 +121,42 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
         }
     });
 })
+
+
+// /tours-within/:distance/center/:latlng/unit/:unit
+// /tours-within/233/center/34.111745,-118.113491/unit/mi
+
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+    //destructure the url to get the distance, latlng and unit from the url
+    const { distance, latlng, unit } = req.params;
+    //destruct the latlng to get the latitude and longitude
+    const [lat, lng] = latlng.split(',');
+
+    const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+    //if user didn't provide the latitude or longitude, throw an error
+    if (!lat || !lng) {
+        return next(new AppError('Please provide latitude and longitude in the format lat,lng.', 400));
+    }
+
+
+
+    const tours = await Tour.find({
+        startLocation: {
+            $geoWithin: {
+                $centerSphere: [[lng, lat], radius]
+            }
+        }
+    });
+
+    //log the distance, lat and lng to the console
+    console.log({ distance, lat, lng, unit });
+
+    res.status(200).json({
+        status: 'success',
+        results: tours.length,
+        data: {
+            data: tours
+        }
+    });
+});

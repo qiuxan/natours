@@ -125,6 +125,7 @@ const tourSchema = mongoose.Schema({
 
 tourSchema.index({ price: 1, ratingsAverage: -1 }); // compound index eg. {{url}}/api/v1/tours?price[lt]=1000&ratingsAverage[gte]=4.5
 tourSchema.index({ slug: 1 }); // single index . 1 or -1 means ascending or descending order, actually it doesn't matter for single index
+tourSchema.index({ startLocation: '2dsphere' }); // index for geospatial data
 
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;

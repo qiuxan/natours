@@ -1,7 +1,7 @@
 // import tourController from '../controllers/tourController.js';
 
 const express = require('express');
-const { getAllTours, creatTour, getTour, updateTour, deleteTour, aliasTopTours, getTourStats, getMonthlyPlan } = require("../controllers/tourController");
+const { getAllTours, creatTour, getTour, updateTour, deleteTour, aliasTopTours, getTourStats, getMonthlyPlan, getToursWithin } = require("../controllers/tourController");
 
 //require reviewController
 // const reviewController = require('../controllers/reviewController');
@@ -27,6 +27,9 @@ router.route('/monthly-plan/:year')
         authController.restrictTo('admin', 'lead-guide', 'guide'),
         getMonthlyPlan
     );
+
+router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(getToursWithin);
+// /tours-within/233/center/34.111745,-118.113491/unit/mi
 
 router.route('/')
     .get(getAllTours)
