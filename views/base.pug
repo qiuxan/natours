@@ -1,1 +1,11 @@
-h1 The Park Camper
+html
+  head
+    title Natours | #{tour.toUpperCase()}
+    //- include the css file
+    link(rel='stylesheet', href='/css/style.css')
+    //- include the favicon
+    link(rel='shortcut icon', href='/img/favicon.png', type='image/png')
+  body
+    h1= tour 
+    h1= user
+    p Welcome to our brand new website!
