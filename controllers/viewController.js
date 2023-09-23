@@ -19,8 +19,26 @@ exports.getOverview = catchAsync(async (req, res, next) => {
     })
 });
 
-exports.getTour = (req, res, next) => {
-    res.status(200).render('tour', {
-        title: 'The Forest Hiker Tour'
+exports.getTour = catchAsync(async (req, res, next) => {
+
+    // 1) Get the data, for the requested tour (including reviews and guides) based on the slug
+    const tour = await Tour.findOne({
+        slug: req.params.slug
+    }).populate({
+        path: 'reviews',
+        fields: 'review rating user'
+    }).populate({
+        path: 'guides',
+        fields: 'name photo role'
     });
-}
+    // req.params.tourSlug
+    // console.log("🚀 ~ file: viewController.js:32 ~ exports.getTour=catchAsync ~ req.params.tourSlug:", req.params.tourSlug)
+    // console.log("🚀 ~ file: viewController.js:31 ~ exports.getTour=catchAsync ~ tour:", tour)
+
+
+
+    res.status(200).render('tour', {
+        title: 'The Forest Hiker Tour',
+        tour
+    });
+})
