@@ -11,5 +11,8 @@ router.get('/', viewController.getOverview);
 //tour route
 router.get('/tour', viewController.getTour);
 
+
+router.get('/tours/:tourSlug', viewController.getTour);
+
 //export the router
 module.exports = router;
