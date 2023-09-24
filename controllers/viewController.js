@@ -27,9 +27,6 @@ exports.getTour = catchAsync(async (req, res, next) => {
     }).populate({
         path: 'reviews',
         fields: 'review rating user'
-    }).populate({
-        path: 'guides',
-        fields: 'name photo role'
     });
     // req.params.tourSlug
     // console.log("🚀 ~ file: viewController.js:32 ~ exports.getTour=catchAsync ~ req.params.tourSlug:", req.params.tourSlug)
