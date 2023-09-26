@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');//Data sanitization against NoSQL query injection
 const xss = require('xss-clean');//Data sanitization against XSS
 const hpp = require('hpp');//Prevent parameter pollution
+// require cookie-parser
+const cookieParser = require('cookie-parser');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -32,7 +34,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 1)GLOBAL MIDDLEWARES
 
 //set security HTTP headers
-app.use(helmet());
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'script-src': ["'self'", 'cdnjs.cloudflare.com']// allow the frontend to load scripts from the cdnjs.cloudflare.com CDN -- this is where the axios library is loaded from
+    }
+}));
 
 //if it is in development mode, then use morgan
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
@@ -48,6 +55,7 @@ app.use('/api', limiter);
 
 //body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 //data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -75,6 +83,8 @@ app.use(hpp(
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     // req.headers
+    // req.cookies
+    console.log("🚀 ~ file: app.js:87 ~ app.use ~ req.cookies:", req.cookies)
     // console.log("🚀 ~ file: app.js:25 ~ app.use ~  req.headers:", req.headers)
     next();
 })
