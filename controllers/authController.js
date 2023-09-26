@@ -30,6 +30,9 @@ exports.protect = catchAsync(async (req, res, next) => {
         token = req.headers.authorization.split(' ')[1];
         // console.log("🚀 ~ file: authController.js:67 ~ exports.protect=catchAsync ~ token:", token)
     }
+    else if (req.cookies.jwt) {// check if there is a cookie named jwt
+        token = req.cookies.jwt;
+    }
 
     if (!token) {
         return next(new AppError('You are not logged in! Please log in to get access', 401));

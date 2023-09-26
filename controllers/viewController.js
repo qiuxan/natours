@@ -32,8 +32,6 @@ exports.getTour = catchAsync(async (req, res, next) => {
     // console.log("🚀 ~ file: viewController.js:32 ~ exports.getTour=catchAsync ~ req.params.tourSlug:", req.params.tourSlug)
     // console.log("🚀 ~ file: viewController.js:31 ~ exports.getTour=catchAsync ~ tour:", tour)
 
-
-
     res.status(200)
         .set(
             'Content-Security-Policy',
@@ -44,3 +42,9 @@ exports.getTour = catchAsync(async (req, res, next) => {
             tour
         });
 })
+
+exports.getLoginForm = catchAsync(async (req, res, next) => {
+    res.status(200).render('login', {
+        title: 'Log into your account'
+    })
+});
