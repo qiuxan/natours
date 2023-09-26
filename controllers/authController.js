@@ -56,6 +56,21 @@ exports.protect = catchAsync(async (req, res, next) => {
     next();
 })
 
+// Only for rendered pages, no errors!
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+
+    if (req.cookies.jwt) {// check if there is a cookie named jwt
+        const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+        const freshUser = await User.findById(decoded.id);
+        if (!freshUser) return next();
+        if (freshUser.changedPasswordAfter(decoded.iat)) return next();
+        res.locals.user = freshUser; // can access it from the pug
+        return next();
+    }
+    next();
+})
+
+
 const createSendToken = (user, statusCode, res) => {
     // create a token
     const token = signToken(user._id);
