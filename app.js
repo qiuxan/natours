@@ -84,7 +84,7 @@ app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     // req.headers
     // req.cookies
-    console.log("🚀 ~ file: app.js:87 ~ app.use ~ req.cookies:", req.cookies)
+    // console.log("🚀 ~ file: app.js:87 ~ app.use ~ req.cookies:", req.cookies)
     // console.log("🚀 ~ file: app.js:25 ~ app.use ~  req.headers:", req.headers)
     next();
 })

@@ -2,6 +2,8 @@
 const Tour = require('../models/tourModel');
 //require catchAsync
 const catchAsync = require('../utils/catchAsync');
+//require AppError
+const AppError = require('../utils/appError');
 
 
 exports.getOverview = catchAsync(async (req, res, next) => {
@@ -31,7 +33,9 @@ exports.getTour = catchAsync(async (req, res, next) => {
     // req.params.tourSlug
     // console.log("🚀 ~ file: viewController.js:32 ~ exports.getTour=catchAsync ~ req.params.tourSlug:", req.params.tourSlug)
     // console.log("🚀 ~ file: viewController.js:31 ~ exports.getTour=catchAsync ~ tour:", tour)
-
+    if (!tour) {
+        return next(new AppError('There is no tour with that name.', 404))
+    }
     res.status(200)
         .set(
             'Content-Security-Policy',
