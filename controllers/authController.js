@@ -57,18 +57,22 @@ exports.protect = catchAsync(async (req, res, next) => {
 })
 
 // Only for rendered pages, no errors!
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
 
     if (req.cookies.jwt) {// check if there is a cookie named jwt
-        const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
-        const freshUser = await User.findById(decoded.id);
-        if (!freshUser) return next();
-        if (freshUser.changedPasswordAfter(decoded.iat)) return next();
-        res.locals.user = freshUser; // can access it from the pug
-        return next();
+        try {
+            const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+            const freshUser = await User.findById(decoded.id);
+            if (!freshUser) return next();
+            if (freshUser.changedPasswordAfter(decoded.iat)) return next();
+            res.locals.user = freshUser; // can access it from the pug
+            return next();
+        } catch (err) {
+            return next();
+        }
     }
     next();
-})
+}
 
 
 const createSendToken = (user, statusCode, res) => {
@@ -96,6 +100,13 @@ const createSendToken = (user, statusCode, res) => {
     });
 }
 
+exports.logout = (req, res) => {
+    res.cookie('jwt', 'loggedout', {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    });
+    res.status(200).json({ status: 'success' });
+};
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create(req.body);
     // create a token
