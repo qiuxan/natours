@@ -51,6 +51,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
 
     req.user = freshUser;
+    res.locals.user = freshUser; // can access it from the pug
 
     // GRANT ACCESS TO PROTECTED ROUTE
     next();
