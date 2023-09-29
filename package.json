@@ -10,8 +10,8 @@
     "import-dummy-data": "node dev-data/data/import-dev-data.js --import",
     "delete-dummy-data": "node dev-data/data/import-dev-data.js --delete",
     "debug": "ndb server.js",
-    "watch:js": "parcel watch public/js/index.js --out-dir public/js --out-file bundle.js",
-    "build:js": "parcel build public/js/index.js --out-dir public/js --out-file bundle.js --no-source-maps --no-cache --log-level 3"
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js --public-url .",
+    "build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js --no-source-maps --no-cache --log-level 3 --public-url ."
   },
   "author": "",
   "license": "ISC",
