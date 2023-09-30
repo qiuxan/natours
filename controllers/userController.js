@@ -42,6 +42,9 @@ exports.getMe = (req, res, next) => {
 
 
 exports.updateMe = catchAsync(async (req, res, next) => {
+
+    console.log("🚀 ~ file: userController.js:33 ~ exports.updateMe=catchAsync ~ req.file", req.file)
+    console.log("🚀 ~ file: userController.js:33 ~ exports.updateMe=catchAsync ~ req.body", req.body)
     // if req.body contains password or passwordConfirm, then return error
     if (req.body.password || req.body.passwordConfirm) {
         return next(new AppError('This route is not for password updates. Please use /updatePassword', 400));
