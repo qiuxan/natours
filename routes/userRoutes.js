@@ -1,12 +1,10 @@
 const express = require('express');
-const multer = require('multer');
 
 
-const { deleteMe, getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, getMe } = require("../controllers/userController");
+const { deleteMe, getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, getMe, uploadPhoto } = require("../controllers/userController");
 // require authController.js
 const { signup, login, forgotPassword, resetPassword, protect, updatePassword, restrictTo, logout } = require("../controllers/authController");
 
-const upload = multer({ dest: 'public/img/users' });
 
 const router = express.Router();
 
@@ -24,7 +22,7 @@ router.patch('/updatePassword', updatePassword);
 
 router.delete('/deleteMe', deleteMe);
 // updateMe route
-router.patch('/updateMe', upload.single('photo'), updateMe);
+router.patch('/updateMe', uploadPhoto, updateMe);
 router.get('/me',
 
     getMe,
