@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
         // validate email with validator package
         validate: [validator.isEmail, 'Please provide a valid email'],
     },
-    photo: String,
+    photo: { type: String, default: 'default.jpg' },
     role: {
         type: String,
         enum: ['user', 'guide', 'lead-guide', 'admin'],
