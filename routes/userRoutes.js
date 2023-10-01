@@ -1,7 +1,7 @@
 const express = require('express');
 
 
-const { deleteMe, getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, getMe, uploadPhoto } = require("../controllers/userController");
+const { deleteMe, getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, getMe, uploadPhoto, resizeUserPhoto } = require("../controllers/userController");
 // require authController.js
 const { signup, login, forgotPassword, resetPassword, protect, updatePassword, restrictTo, logout } = require("../controllers/authController");
 
@@ -22,7 +22,7 @@ router.patch('/updatePassword', updatePassword);
 
 router.delete('/deleteMe', deleteMe);
 // updateMe route
-router.patch('/updateMe', uploadPhoto, updateMe);
+router.patch('/updateMe', uploadPhoto, resizeUserPhoto, updateMe);
 router.get('/me',
 
     getMe,
