@@ -1,7 +1,7 @@
 // import tourController from '../controllers/tourController.js';
 
 const express = require('express');
-const { getAllTours, creatTour, getTour, updateTour, deleteTour, aliasTopTours, getTourStats, getMonthlyPlan, getToursWithin, getDistances } = require("../controllers/tourController");
+const { getAllTours, creatTour, getTour, updateTour, deleteTour, aliasTopTours, getTourStats, getMonthlyPlan, getToursWithin, getDistances, uploadTourImages, resizeTourImages } = require("../controllers/tourController");
 
 //require reviewController
 // const reviewController = require('../controllers/reviewController');
@@ -48,6 +48,8 @@ router.route('/:id')
     .patch(
         authController.protect,
         authController.restrictTo('admin', 'lead-guide'),
+        uploadTourImages,
+        resizeTourImages,
         updateTour)
     .delete(
         authController.protect,
