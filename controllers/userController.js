@@ -41,14 +41,14 @@ const upload = multer({
     fileFilter: multerFilter
 });
 
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = async (req, res, next) => {
     // if there is no file, then return next()
     if (!req.file) return next();
 
     // set filename property on req.body
     req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
-    sharp(req.file.buffer)
+    await sharp(req.file.buffer)
         .resize(500, 500)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
