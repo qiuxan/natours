@@ -1,3 +1,5 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const Tour = require('../models/tourModel');
 // const APIFeature = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
@@ -5,6 +7,50 @@ const AppError = require('../utils/appError');
 
 //require handlerFactory.js
 const factory = require('./handlerFactory');
+
+const multerStorage = multer.memoryStorage();
+
+// multer filter
+const multerFilter = (req, file, cb) => {
+    // check if the file is an image
+    if (file.mimetype.startsWith('image')) {
+        cb(null, true);
+    } else {
+        cb(new AppError('Not an image! Please upload only images', 400), false);
+    }
+}
+
+const upload = multer({
+    storage: multerStorage,
+    fileFilter: multerFilter
+});
+
+exports.uploadTourImages = upload.fields([
+    { name: 'imageCover', maxCount: 1 },
+    { name: 'images', maxCount: 3 }
+]);
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+    console.log(req.files);
+    next();
+});
+exports.resizeUserPhoto = (req, res, next) => {
+    // if there is no file, then return next()
+    if (!req.file) return next();
+
+    // set filename property on req.body
+    req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+    sharp(req.file.buffer)
+        .resize(500, 500)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/users/${req.file.filename}`);
+
+    next();
+}
+
+
 
 exports.getDistances = catchAsync(async (req, res, next) => {
     //destructure the url to get the distance, latlng and unit from the url
