@@ -10,7 +10,7 @@ const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require('../utils/appError');
 // import sendEmail
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 
 
 //sign Token
@@ -111,6 +111,7 @@ exports.logout = (req, res) => {
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create(req.body);
     // create a token
+    await new Email(newUser, `${req.protocol}://${req.get('host')}/me`).sendWelcome();
     createSendToken(newUser, 201, res);
 })
 
@@ -163,11 +164,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
     const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
     try {
-        await sendEmail({
-            email: user.email,
-            subject: 'Your password reset token (valid for 10 min)',
-            message,
-        });
+        // await sendEmail({
+        //     email: user.email,
+        //     subject: 'Your password reset token (valid for 10 min)',
+        //     message,
+        // });
         res.status(200).json({
             status: 'success',
             message: 'Token sent to email!',
