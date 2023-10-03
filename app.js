@@ -15,6 +15,8 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 //import viewRouter
 const viewRouter = require('./routes/viewRoutes');
+//import bookingRouter
+const bookingRouter = require('./routes/bookingRoutes');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -97,6 +99,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
 //use reviewRouter
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 // create a route for note defined routes
 app.all('*', (req, res, next) => {
