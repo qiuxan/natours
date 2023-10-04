@@ -8,6 +8,7 @@ const xss = require('xss-clean');//Data sanitization against XSS
 const hpp = require('hpp');//Prevent parameter pollution
 // require cookie-parser
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -45,6 +46,9 @@ app.use(helmet.contentSecurityPolicy({
 }));
 //if it is in development mode, then use morgan
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
+
+//compress all text sent to clients
+app.use(compression());
 
 //limit requests from same IP
 const limiter = rateLimit({
