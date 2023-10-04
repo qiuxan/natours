@@ -2,6 +2,7 @@
 const express = require('express');
 //import viewController
 const viewController = require('../controllers/viewController');
+const bookingController = require('../controllers/bookingController');
 
 //reqire authController
 const authController = require('../controllers/authController');
@@ -15,7 +16,10 @@ router.post('/submit-user-data', authController.protect, viewController.updateUs
 router.use(authController.isLoggedIn);
 
 
-router.get('/', viewController.getOverview);
+router.get('/',
+    bookingController.createBookingCheckout,
+    authController.isLoggedIn,
+    viewController.getOverview);
 
 //tour route
 router.get('/tour', viewController.getTour);
