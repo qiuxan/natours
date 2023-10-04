@@ -61,7 +61,7 @@ reviewSchema.pre(/^find/, function (next) {
 
 //static method to calculate average rating
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
-    console.log("🚀 ~ file: reviewModel.js:60 ~ tourId:", tourId)
+    // console.log("🚀 ~ file: reviewModel.js:60 ~ tourId:", tourId)
     const stats = await this.aggregate([// this points to the current model
         {
             $match: { tour: tourId },
