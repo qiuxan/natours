@@ -9,6 +9,7 @@ const hpp = require('hpp');//Prevent parameter pollution
 // require cookie-parser
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -37,6 +38,18 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 1)GLOBAL MIDDLEWARES
+//implement CORS
+app.use(cors());
+
+// app.use(cors({
+//     origin: 'https://www.natours.com'
+// })); // only allow cross url access from this domain
+
+
+app.options('*', cors());
+
+// app.options('/api/v1/tours/:id', cors());// only allow cross url access to this route to delete and update tour
+
 
 //set security HTTP headers
 app.use(helmet.contentSecurityPolicy({
