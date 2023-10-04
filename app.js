@@ -39,10 +39,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet.contentSecurityPolicy({
     directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        'script-src': ["'self'", 'cdnjs.cloudflare.com']// allow the frontend to load scripts from the cdnjs.cloudflare.com CDN -- this is where the axios library is loaded from
+        'script-src': ["'self'", 'cdnjs.cloudflare.com', 'api.mapbox.com', 'js.stripe.com'],
+        'script-src-elem': ["'self'", 'js.stripe.com', 'https://js.stripe.com'],
     }
 }));
-
 //if it is in development mode, then use morgan
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
